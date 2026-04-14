@@ -157,8 +157,8 @@ if st.button("Calcular total", type="primary", use_container_width=True):
     dietas_total = (st.session_state.dietas["comida"] * 14.02 + st.session_state.dietas["cena"] * 16.36 + st.session_state.dietas["sin"] * 30.38 + st.session_state.dietas["con"] * 51.39)
     
     base_liq = bruto_dia * jornadas
-    v_bruto = (base_liq * 0.07) if liq_opcion in ['Está incluido en el bruto', 'Vacaciones aparte'] else 0
-    f_bruto = (base_liq * 0.0333) if liq_opcion in ['Está incluido en el bruto', 'Finiquito aparte'] else 0
+    v_bruto = (base_liq * 0.07) if liq_opcion in ['Sí, calcular', 'Vacaciones aparte'] else 0
+    f_bruto = (base_liq * 0.0333) if liq_opcion in ['Sí, calcular', 'Finiquito aparte'] else 0
     liq_neta = (v_bruto + f_bruto) * (1 - (irpf/100))
     
     total_final = n_base + total_extras_neto + dietas_total + liq_neta
