@@ -144,7 +144,7 @@ especiales_qty = st.number_input("¿Cuántas?", min_value=1, step=1, format="%d"
 plus_consec = st.checkbox("¿Plus 4 jornadas consecutivas (+35€)?", key=f"check_plus_{r_id}")
 plus_consec_qty = st.number_input("¿Cuántos?", min_value=1, step=1, format="%d", key=f"qty_plus_{r_id}") if plus_consec else 0
 
-liq_opcion = st.selectbox("¿Vacaciones y finiquito aparte?", ['No, calcular', 'Todo aparte', 'Vacaciones aparte', 'Finiquito aparte'], key=f"liq_val_{r_id}")
+liq_opcion = st.selectbox("¿Vacaciones y finiquito aparte?", ['Sí, calcular', 'Está incluido en el bruto', 'Vacaciones aparte', 'Finiquito aparte'], key=f"liq_val_{r_id}")
 
 # --- PROCESADO ---
 st.write("")
@@ -157,8 +157,8 @@ if st.button("Calcular total", type="primary", use_container_width=True):
     dietas_total = (st.session_state.dietas["comida"] * 14.02 + st.session_state.dietas["cena"] * 16.36 + st.session_state.dietas["sin"] * 30.38 + st.session_state.dietas["con"] * 51.39)
     
     base_liq = bruto_dia * jornadas
-    v_bruto = (base_liq * 0.07) if liq_opcion in ['Todo aparte', 'Vacaciones aparte'] else 0
-    f_bruto = (base_liq * 0.0333) if liq_opcion in ['Todo aparte', 'Finiquito aparte'] else 0
+    v_bruto = (base_liq * 0.07) if liq_opcion in ['Está incluido en el bruto', 'Vacaciones aparte'] else 0
+    f_bruto = (base_liq * 0.0333) if liq_opcion in ['Está incluido en el bruto', 'Finiquito aparte'] else 0
     liq_neta = (v_bruto + f_bruto) * (1 - (irpf/100))
     
     total_final = n_base + total_extras_neto + dietas_total + liq_neta
