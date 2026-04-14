@@ -142,7 +142,7 @@ with st.container(border=True):
 especial = st.checkbox("¿Alguna jornada especial? (+20€)", key="check_esp")
 especiales_qty = st.number_input("¿Cuántas?", min_value=1, step=1, key="qty_esp") if especial else 0
 
-liq_opcion = st.selectbox("¿Las vacaciones y el finiquito van aparte?", ['No, calcular', 'Todo aparte', 'Sólo vacaciones', 'Sólo finiquito'], key="liq_val")
+liq_opcion = st.selectbox("¿Las vacaciones y el finiquito van aparte?", ['No, calcular', 'Todo aparte', 'Vacaciones aparte', 'Finiquito aparte'], key="liq_val")
 
 # --- PROCESADO DE CÁLCULO ---
 st.write("")
@@ -163,8 +163,8 @@ if st.button("Calcular total", type="primary", use_container_width=True):
     
     # 4. Vacaciones y finiquito
     base_liq = bruto_dia * jornadas
-    v_bruto = (base_liq * 0.07) if liq_opcion in ['Todo aparte', 'Sólo vacaciones'] else 0
-    f_bruto = (base_liq * 0.0333) if liq_opcion in ['Todo aparte', 'Sólo finiquito'] else 0
+    v_bruto = (base_liq * 0.07) if liq_opcion in ['Todo aparte', 'Vacaciones aparte'] else 0
+    f_bruto = (base_liq * 0.0333) if liq_opcion in ['Todo aparte', 'Finiquito aparte'] else 0
     liq_bruta = v_bruto + f_bruto
     liq_neta = liq_bruta * (1 - (irpf/100))
     
