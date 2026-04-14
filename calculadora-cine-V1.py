@@ -175,7 +175,7 @@ if st.button("Calcular total", type="primary", use_container_width=True):
     total_final = n_base + total_extras_neto + dietas_total + liq_neta
 
     st.markdown("### Resumen")
-    st.write(f"📅 **Base ({jornadas} días) + Jornadas especiales/Plus:**")
+    st.write(f"📅 **Base ({jornadas} días) + Jornadas especiales:**")
     st.write(f"   • {n_base:.2f}€ netos (Bruto: {b_base:.2f}€)")
     if total_extras_neto > 0:
         st.write(f"⚡️ **Extras/Festivas:**")
