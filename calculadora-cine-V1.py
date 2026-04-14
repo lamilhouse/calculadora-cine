@@ -142,7 +142,7 @@ with st.container(border=True):
 especial = st.checkbox("¿Alguna jornada especial? (+20€)", key="check_esp")
 especiales_qty = st.number_input("¿Cuántas?", min_value=1, step=1, key="qty_esp") if especial else 0
 
-plus_consec = st.checkbox("¿Sumamos algún plus por 4 jornadas especiales consecutivas (+35€)?", key="check_plus")
+plus_consec = st.checkbox("¿Algún plus por 4 jornadas especiales consecutivas? (+35€)", key="check_plus")
 plus_consec_qty = st.number_input("¿Cuántos?", min_value=1, step=1, key="qty_plus") if plus_consec else 0
 
 liq_opcion = st.selectbox("¿Las vacaciones y el finiquito van aparte?", ['No, calcular', 'Todo aparte', 'Vacaciones aparte', 'Finiquito aparte'], key="liq_val")
