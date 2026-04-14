@@ -53,8 +53,7 @@ st.markdown("""
 
 st.title("Calculadora de nómina")
 
-# --- FUNCIÓN DE LIMPIEZA (CORREGIDA) ---
-# Al usarla en on_click, no necesita st.rerun()
+# --- FUNCIÓN DE LIMPIEZA ---
 def limpiar_todo():
     for key in st.session_state.keys():
         del st.session_state[key]
@@ -80,14 +79,14 @@ else:
     mes_entero = st.radio("¿Has trabajado el mes entero?", ('Sí', 'No'), key="mes_entero")
     jornadas = 30 if mes_entero == 'Sí' else st.number_input("¿Cuántos días has trabajado?", min_value=1, max_value=30, step=1, key="dias_mes")
 
-# --- RÉGIMEN E IRPF (Pistas sin decimales) ---
+# --- RÉGIMEN E IRPF ---
 regimen = st.selectbox("Selecciona Régimen de la SS", ["Artistas", "General"], key="regimen")
 irpf_sugerido = 2 if regimen == "Artistas" else 15
 irpf = st.number_input("¿Cuál es tu IRPF?", value=int(irpf_sugerido), step=1, format="%d", key="irpf_val")
 
 st.write("### Otros conceptos")
 
-# --- BLOQUE EXTRAS (En contenedor para evitar errores visuales) ---
+# --- BLOQUE EXTRAS ---
 with st.container(border=True):
     st.write("**Añadir Horas Extras / Festivas**")
     col_qty, col_mult = st.columns(2)
@@ -116,7 +115,7 @@ with st.container(border=True):
                 st.session_state.extras_lista.pop(i)
                 st.rerun()
 
-# --- BLOQUE DIETAS (Compacto y con iconos) ---
+# --- BLOQUE DIETAS ---
 with st.container(border=True):
     st.write("**Añadir Dietas**")
     c1, c2 = st.columns(2)
@@ -139,16 +138,20 @@ with st.container(border=True):
             st.session_state.dietas = {k:0 for k in st.session_state.dietas}
             st.rerun()
 
+# --- JORNADAS ESPECIALES Y PLUS CONSECUTIVAS ---
 especial = st.checkbox("¿Alguna jornada especial? (+20€)", key="check_esp")
 especiales_qty = st.number_input("¿Cuántas?", min_value=1, step=1, key="qty_esp") if especial else 0
+
+plus_consec = st.checkbox("¿Sumamos algún plus por 4 jornadas especiales consecutivas (+35€)?", key="check_plus")
+plus_consec_qty = st.number_input("¿Cuántos?", min_value=1, step=1, key="qty_plus") if plus_consec else 0
 
 liq_opcion = st.selectbox("¿Las vacaciones y el finiquito van aparte?", ['No, calcular', 'Todo aparte', 'Vacaciones aparte', 'Finiquito aparte'], key="liq_val")
 
 # --- PROCESADO DE CÁLCULO ---
 st.write("")
 if st.button("Calcular total", type="primary", use_container_width=True):
-    # 1. Base
-    b_base = (bruto_dia * jornadas) + (especiales_qty * 20)
+    # 1. Base (Salario base + jornadas especiales + plus consecutivas)
+    b_base = (bruto_dia * jornadas) + (especiales_qty * 20) + (plus_consec_qty * 35)
     n_base = b_base * (1 - 0.0653 - (irpf/100))
     
     # 2. Extras acumulados
@@ -172,7 +175,7 @@ if st.button("Calcular total", type="primary", use_container_width=True):
     total_final = n_base + total_extras_neto + dietas_total + liq_neta
 
     st.markdown("### Resumen")
-    st.write(f"📅 **Base ({jornadas} días) + Jornadas especiales:**")
+    st.write(f"📅 **Base ({jornadas} días) + Jornadas especiales/Plus:**")
     st.write(f"   • {n_base:.2f}€ netos (Bruto: {b_base:.2f}€)")
     if total_extras_neto > 0:
         st.write(f"⚡️ **Extras/Festivas:**")
