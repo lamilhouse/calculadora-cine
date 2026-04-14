@@ -121,8 +121,8 @@ with st.container(border=True):
     c1, c2 = st.columns(2)
     if c1.button("🌯 Media - comida (14,02€)"): st.session_state.dietas["comida"] += 1; st.rerun()
     if c1.button("🍽 Media - cena (16,36€)"): st.session_state.dietas["cena"] += 1; st.rerun()
-    if c2.button("🚍 Sin pernocta (30,38€)"): st.session_state.dietas["sin"] += 1; st.rerun()
-    if c2.button("💤 Con pernocta (51,39€)"): st.session_state.dietas["con"] += 1; st.rerun()
+    if c1.button("🚍 Sin pernocta (30,38€)"): st.session_state.dietas["sin"] += 1; st.rerun()
+    if c1.button("💤 Con pernocta (51,39€)"): st.session_state.dietas["con"] += 1; st.rerun()
     
     d_str = []
     if st.session_state.dietas["comida"] > 0: d_str.append(f"🌯 x{st.session_state.dietas['comida']}")
