@@ -131,7 +131,7 @@ with st.container(border=True):
             st.rerun()
 
 especial = st.checkbox("¿Alguna jornada especial? (+20€)", key="check_esp")
-especiales_qty = st.number_input("¿Cuántas?", min_value=0, step=1.0, format="%g", key="qty_esp") if especial else 0
+especiales_qty = st.number_input("¿Cuántas?", min_value=1, step=1, format="%d", key="qty_esp") if especial else 0
 
 plus_consec = st.checkbox("¿Plus 4 jornadas consecutivas (+35€)?", key="check_plus")
 plus_consec_qty = st.number_input("¿Cuántos?", min_value=1, step=1, format="%d", key="qty_plus") if plus_consec else 0
