@@ -54,21 +54,21 @@ if 'extras_lista' not in st.session_state: st.session_state.extras_lista = []
 if 'dietas' not in st.session_state: 
     st.session_state.dietas = {"comida": 0, "cena": 0, "sin": 0, "con": 0}
 
-# --- DATOS BASE ---
+# --- DATOS BASE (CORREGIDOS CON %g) ---
 tipo_contrato = st.radio("¿Qué tipo de contrato tienes?", ('📅 Días sueltos', '🗓 Mes'), key="tipo_contrato")
 
 if 'Días sueltos' in tipo_contrato:
-    bruto_dia = st.number_input("¿Cuál es tu salario bruto?", min_value=0.0, step=10.0, format="%.f", key="bruto_dia")
-    horas_base = st.number_input("¿De cuántas horas es la jornada?", min_value=1.0, value=8.0, step=1.0, format="%.f", key="h_base")
+    bruto_dia = st.number_input("¿Cuál es tu salario bruto?", min_value=0.0, step=1.0, format="%g", key="bruto_dia")
+    horas_base = st.number_input("¿De cuántas horas es la jornada?", min_value=1.0, value=8.0, step=0.5, format="%g", key="h_base")
     precio_hora_base = bruto_dia / horas_base if horas_base > 0 else 0
-    jornadas = st.number_input("¿Cuántas jornadas son?", min_value=0, step=0.5, format="%d", key="jornadas_sueltas")
+    jornadas = st.number_input("¿Cuántas jornadas son?", min_value=0.0, step=0.5, format="%g", key="jornadas_sueltas")
 else:
-    salario_mes_bruto = st.number_input("¿Cuál es tu salario bruto?", min_value=0.0, step=100.0, format="%.f", key="s_mes")
-    h_sem = st.number_input("¿Horas semanales?", min_value=1.0, step=1.0, value=40.0, format="%.f", key="h_sem")
+    salario_mes_bruto = st.number_input("¿Cuál es tu salario bruto?", min_value=0.0, step=1.0, format="%g", key="s_mes")
+    h_sem = st.number_input("¿Horas semanales?", min_value=1.0, step=1.0, value=40.0, format="%g", key="h_sem")
     bruto_dia = salario_mes_bruto / 30
     precio_hora_base = (bruto_dia * 7) / h_sem
     mes_entero = st.radio("¿Has trabajado el mes entero?", ('Sí', 'No'), key="mes_entero")
-    jornadas = 30.0 if mes_entero == 'Sí' else st.number_input("¿Cuántos días has trabajado?", min_value=0.0, max_value=30.0, step=0.5, format="%d", key="dias_mes")
+    jornadas = 30.0 if mes_entero == 'Sí' else st.number_input("¿Cuántos días has trabajado?", min_value=0.0, max_value=30.0, step=0.5, format="%g", key="dias_mes")
 
 regimen = st.selectbox("Selecciona Régimen de la SS", ["Artistas", "General"], key="regimen")
 irpf_sugerido = 2 if regimen == "Artistas" else 15
@@ -76,12 +76,12 @@ irpf = st.number_input("¿Cuál es tu IRPF?", value=int(irpf_sugerido), step=1, 
 
 st.write("### Otros conceptos")
 
-# --- EXTRAS (BOTONES RESTAURADOS) ---
+# --- EXTRAS (CORREGIDOS CON %g) ---
 with st.container(border=True):
     st.write("**Añadir Horas Extras / Festivas**")
     col_qty, col_mult = st.columns(2)
-    e_qty = col_qty.number_input("¿Cuántas?", min_value=0.0, step=0.5, format="%.1f", key="e_qty")
-    e_mult = col_mult.number_input("Factor (ej. 1,5)", min_value=1.0, value=1.5, step=0.1, format="%.2f", key="e_mult")
+    e_qty = col_qty.number_input("¿Cuántas?", min_value=0.0, step=0.5, format="%g", key="e_qty")
+    e_mult = col_mult.number_input("Factor (ej. 1,5)", min_value=1.0, value=1.5, step=0.1, format="%g", key="e_mult")
     e_tipo = st.radio("Tipo de hora", ('Hora Extra', 'Festiva, otras...'), key="e_tipo")
     
     if st.button("Añadir estas horas"):
@@ -89,8 +89,10 @@ with st.container(border=True):
             ss_rate = 0.047 if 'Extra' in e_tipo else 0.0653
             bruto_t = (precio_hora_base * e_mult) * e_qty
             neto_t = bruto_t * (1 - ss_rate - (irpf/100))
+            # Formateo limpio para la lista
+            qty_label = f"{e_qty:g}".replace('.', ',')
             st.session_state.extras_lista.append({
-                'desc': f"{e_qty}h {e_tipo} (x{e_mult})", 
+                'desc': f"{qty_label}h {e_tipo} (x{e_mult:g})", 
                 'bruto': bruto_t, 
                 'neto': neto_t
             })
@@ -129,10 +131,10 @@ with st.container(border=True):
             st.rerun()
 
 especial = st.checkbox("¿Alguna jornada especial? (+20€)", key="check_esp")
-especiales_qty = st.number_input("¿Cuántas?", min_value=1, step=1, key="qty_esp") if especial else 0
+especiales_qty = st.number_input("¿Cuántas?", min_value=0.0, step=0.5, format="%g", key="qty_esp") if especial else 0
 
 plus_consec = st.checkbox("¿Plus 4 jornadas consecutivas (+35€)?", key="check_plus")
-plus_consec_qty = st.number_input("¿Cuántos?", min_value=1, step=1, key="qty_plus") if plus_consec else 0
+plus_consec_qty = st.number_input("¿Cuántos?", min_value=1, step=1, format="%d", key="qty_plus") if plus_consec else 0
 
 liq_opcion = st.selectbox("¿Vacaciones y finiquito aparte?", ['No, calcular', 'Todo aparte', 'Vacaciones aparte', 'Finiquito aparte'], key="liq_val")
 
@@ -151,7 +153,9 @@ if st.button("Calcular total", type="primary", use_container_width=True):
     total_final = n_base + total_extras_neto + dietas_total + liq_neta
 
     st.markdown("### Resumen")
-    st.write(f"📅 **Base ({jornadas:.1f} días) + Especiales/Plus:**")
+    # Formateo limpio para días en el resumen
+    dias_label = f"{jornadas:g}".replace('.', ',')
+    st.write(f"📅 **Base ({dias_label} días) + Especiales/Plus:**")
     st.write(f"   • {n_base:.2f}€ netos (Bruto: {b_base:.2f}€)")
     if total_extras_neto > 0:
         st.write(f"⚡️ **Extras/Festivas:**")
