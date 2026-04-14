@@ -83,7 +83,7 @@ else:
 # --- RÉGIMEN E IRPF (Pistas sin decimales) ---
 regimen = st.selectbox("Selecciona Régimen de la SS", ["Artistas", "General"], key="regimen")
 irpf_sugerido = 2 if regimen == "Artistas" else 15
-irpf = st.number_input("¿Cuál es tu IRPF? (0 para mínimo)", value=int(irpf_sugerido), step=1, format="%d", key="irpf_val")
+irpf = st.number_input("¿Cuál es tu IRPF?", value=int(irpf_sugerido), step=1, format="%d", key="irpf_val")
 
 st.write("### Otros conceptos")
 
@@ -120,8 +120,8 @@ with st.container(border=True):
 with st.container(border=True):
     st.write("**Añadir Dietas**")
     c1, c2 = st.columns(2)
-    if c1.button("🌯 Media comida (14,02€)"): st.session_state.dietas["comida"] += 1; st.rerun()
-    if c2.button("🍽 Media cena (16,36€)"): st.session_state.dietas["cena"] += 1; st.rerun()
+    if c1.button("🌯 Media - comida (14,02€)"): st.session_state.dietas["comida"] += 1; st.rerun()
+    if c2.button("🍽 Media - cena (16,36€)"): st.session_state.dietas["cena"] += 1; st.rerun()
     if c1.button("🚍 Sin pernocta (30,38€)"): st.session_state.dietas["sin"] += 1; st.rerun()
     if c2.button("💤 Con pernocta (51,39€)"): st.session_state.dietas["con"] += 1; st.rerun()
     
@@ -134,7 +134,7 @@ with st.container(border=True):
     if d_str:
         st.write("---")
         c_res, c_clr = st.columns([0.9, 0.1])
-        c_res.write(f"✈️ {' | '.join(d_str)}")
+        c_res.write(f"{' | '.join(d_str)}")
         if c_clr.button("X", key="clear_dietas"):
             st.session_state.dietas = {k:0 for k in st.session_state.dietas}
             st.rerun()
@@ -142,7 +142,7 @@ with st.container(border=True):
 especial = st.checkbox("¿Alguna jornada especial? (+20€)", key="check_esp")
 especiales_qty = st.number_input("¿Cuántas?", min_value=1, step=1, key="qty_esp") if especial else 0
 
-liq_opcion = st.selectbox("¿Las vacaciones y el finiquito van aparte?", ['No, calcular', 'Ambas', 'Sólo vacaciones', 'Sólo finiquito'], key="liq_val")
+liq_opcion = st.selectbox("¿Las vacaciones y el finiquito van aparte?", ['No, calcular', 'Todo aparte', 'Sólo vacaciones', 'Sólo finiquito'], key="liq_val")
 
 # --- PROCESADO DE CÁLCULO ---
 st.write("")
@@ -163,15 +163,15 @@ if st.button("Calcular total", type="primary", use_container_width=True):
     
     # 4. Vacaciones y finiquito
     base_liq = bruto_dia * jornadas
-    v_bruto = (base_liq * 0.07) if liq_opcion in ['Ambas', 'Sólo vacaciones'] else 0
-    f_bruto = (base_liq * 0.0333) if liq_opcion in ['Ambas', 'Sólo finiquito'] else 0
+    v_bruto = (base_liq * 0.07) if liq_opcion in ['Todo aparte', 'Sólo vacaciones'] else 0
+    f_bruto = (base_liq * 0.0333) if liq_opcion in ['Todo aparte', 'Sólo finiquito'] else 0
     liq_bruta = v_bruto + f_bruto
     liq_neta = liq_bruta * (1 - (irpf/100))
     
     # TOTAL NETO FINAL
     total_final = n_base + total_extras_neto + dietas_total + liq_neta
 
-    st.markdown("### Resumen Final")
+    st.markdown("### Resumen")
     st.write(f"📅 **Base ({jornadas} días):**")
     st.write(f"   • {n_base:.2f}€ netos (Bruto: {b_base:.2f}€)")
     if total_extras_neto > 0:
