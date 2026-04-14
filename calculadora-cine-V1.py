@@ -3,31 +3,60 @@ import streamlit as st
 # Configuración de página
 st.set_page_config(page_title="Calculadora Nómina Cine", page_icon="🎬")
 
-# --- ESTILO CSS ---
+# --- ESTILO CSS DEFINITIVO ---
 st.markdown("""
     <style>
     .streamlit-expanderHeader { display: none !important; }
-    html, body, [class*="st-"] { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-    div.stButton > button[kind="primary"] { background-color: #4682B4; color: white; border: none; border-radius: 8px; height: 3em; }
-    div.stButton > button:not([kind="primary"]) { background-color: transparent; color: #4682B4; border: 1px solid #4682B4; border-radius: 8px; height: 3em; }
-    div[data-testid="stHorizontalBlock"] { align-items: center !important; }
-    div[data-testid="stHorizontalBlock"] button { border: none !important; background-color: transparent !important; color: #888 !important; box-shadow: none !important; padding: 0 !important; min-height: 0px !important; line-height: 1 !important; }
-    .stMarkdown p { margin-top: 0px !important; margin-bottom: 2px !important; }
+    html, body, [class*="st-"] {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    div.stButton > button[kind="primary"] {
+        background-color: #4682B4;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        height: 3em;
+    }
+    div.stButton > button:not([kind="primary"]) {
+        background-color: transparent;
+        color: #4682B4;
+        border: 1px solid #4682B4;
+        border-radius: 8px;
+        height: 3em;
+    }
+    div[data-testid="stHorizontalBlock"] {
+        align-items: center !important;
+    }
+    div[data-testid="stHorizontalBlock"] button {
+        border: none !important;
+        background-color: transparent !important;
+        color: #888 !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+        min-height: 0px !important;
+        line-height: 1 !important;
+    }
+    .stMarkdown p {
+        margin-top: 0px !important;
+        margin-bottom: 2px !important;
+    }
     </style>
 """, unsafe_allow_html=True)
 
 st.title("Calculadora de nómina")
 
-# --- LÓGICA DE RESET ---
+# --- LÓGICA DE LIMPIEZA ---
 if 'reset_counter' not in st.session_state:
     st.session_state.reset_counter = 0
 
 def limpiar_todo():
-    # Guardamos el contador, borramos todo lo demás y lo restauramos incrementado
-    actual_reset = st.session_state.reset_counter
-    st.session_state.clear()
-    st.session_state.reset_counter = actual_reset + 1
+    # Borramos todo y subimos el contador para regenerar llaves
+    for key in list(st.session_state.keys()):
+        if key != 'reset_counter':
+            del st.session_state[key]
+    st.session_state.reset_counter += 1
 
+# Este ID hará que los widgets se reinicien de verdad
 r_id = st.session_state.reset_counter
 
 if 'extras_lista' not in st.session_state: st.session_state.extras_lista = []
@@ -35,14 +64,13 @@ if 'dietas' not in st.session_state:
     st.session_state.dietas = {"comida": 0, "cena": 0, "sin": 0, "con": 0}
 
 # --- DATOS BASE ---
-# Añadimos r_id a los keys para que se limpien al resetear
-tipo_contrato = st.radio("¿Qué tipo de contrato tienes?", ('📅 Días sueltos', '🗓 Mes'), key=f"tipo_contrato_{r_id}")
+tipo_contrato = st.radio("¿Qué tipo de contrato tienes?", ('📅 Días sueltos', '🗓 Mes'), key=f"tipo_{r_id}")
 
 if 'Días sueltos' in tipo_contrato:
     bruto_dia = st.number_input("¿Cuál es tu salario bruto?", min_value=0.0, step=100.0, format="%g", key=f"bruto_dia_{r_id}")
     horas_base = st.number_input("¿De cuántas horas es la jornada?", min_value=1.0, value=8.0, step=1.0, format="%g", key=f"h_base_{r_id}")
     precio_hora_base = bruto_dia / horas_base if horas_base > 0 else 0
-    jornadas = st.number_input("¿Cuántas jornadas son?", min_value=0.0, step=1.0, format="%g", key=f"jornadas_sueltas_{r_id}")
+    jornadas = st.number_input("¿Cuántas jornadas son?", min_value=0.0, step=1.0, format="%g", key=f"jornadas_{r_id}")
 else:
     salario_mes_bruto = st.number_input("¿Cuál es tu salario bruto?", min_value=0.0, step=100.0, format="%g", key=f"s_mes_{r_id}")
     h_sem = st.number_input("¿Horas semanales?", min_value=1.0, step=1.0, value=40.0, format="%g", key=f"h_sem_{r_id}")
@@ -53,7 +81,7 @@ else:
 
 regimen = st.selectbox("Selecciona Régimen de la SS", ["Artistas", "General"], key=f"regimen_{r_id}")
 irpf_sugerido = 2 if regimen == "Artistas" else 15
-irpf = st.number_input("¿Cuál es tu IRPF?", value=int(irpf_sugerido), step=1, format="%d", key=f"irpf_val_{r_id}")
+irpf = st.number_input("¿Cuál es tu IRPF?", value=int(irpf_sugerido), step=1, format="%d", key=f"irpf_{r_id}")
 
 st.write("### Otros conceptos")
 
@@ -106,11 +134,10 @@ with st.container(border=True):
         st.write("---")
         c_res, c_clr = st.columns([0.9, 0.1])
         c_res.write(f"{' | '.join(d_str)}")
-        if c_clr.button("X", key=f"clear_dietas_{r_id}"):
+        if c_clr.button("X", key=f"clr_dietas_{r_id}"):
             st.session_state.dietas = {k:0 for k in st.session_state.dietas}
             st.rerun()
 
-# --- JORNADAS ESPECIALES Y LIQUIDACIÓN (KEYS CORREGIDOS) ---
 especial = st.checkbox("¿Alguna jornada especial? (+20€)", key=f"check_esp_{r_id}")
 especiales_qty = st.number_input("¿Cuántas?", min_value=1, step=1, format="%d", key=f"qty_esp_{r_id}") if especial else 0
 
@@ -122,20 +149,18 @@ liq_opcion = st.selectbox("¿Vacaciones y finiquito aparte?", ['No, calcular', '
 # --- PROCESADO ---
 st.write("")
 if st.button("Calcular total", type="primary", use_container_width=True):
-    # Usamos las variables locales que Streamlit ya ha capturado de los inputs con r_id
+    # Aquí b_base y base_liq usan las variables definidas arriba, funcionará perfecto
     b_base = (bruto_dia * jornadas) + (especiales_qty * 20) + (plus_consec_qty * 35)
     n_base = b_base * (1 - 0.0653 - (irpf/100))
-    
     total_extras_neto = sum(item['neto'] for item in st.session_state.extras_lista)
     total_extras_bruto = sum(item['bruto'] for item in st.session_state.extras_lista)
-    
     dietas_total = (st.session_state.dietas["comida"] * 14.02 + st.session_state.dietas["cena"] * 16.36 + st.session_state.dietas["sin"] * 30.38 + st.session_state.dietas["con"] * 51.39)
     
     base_liq = bruto_dia * jornadas
     v_bruto = (base_liq * 0.07) if liq_opcion in ['Todo aparte', 'Vacaciones aparte'] else 0
     f_bruto = (base_liq * 0.0333) if liq_opcion in ['Todo aparte', 'Finiquito aparte'] else 0
-    
     liq_neta = (v_bruto + f_bruto) * (1 - (irpf/100))
+    
     total_final = n_base + total_extras_neto + dietas_total + liq_neta
 
     st.markdown("### Resumen")
@@ -150,9 +175,6 @@ if st.button("Calcular total", type="primary", use_container_width=True):
     if liq_neta > 0:
         st.write(f"📄 **Liquidación:** {liq_neta:.2f}€ netos")
     st.markdown(f"## Total: {total_final:.2f}€")
-
-for _ in range(3): st.write("")
-st.button("Nuevo cálculo", use_container_width=True, on_click=limpiar_todo)
 
 for _ in range(3): st.write("")
 st.button("Nuevo cálculo", use_container_width=True, on_click=limpiar_todo)
