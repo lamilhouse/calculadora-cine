@@ -58,17 +58,17 @@ if 'dietas' not in st.session_state:
 tipo_contrato = st.radio("¿Qué tipo de contrato tienes?", ('📅 Días sueltos', '🗓 Mes'), key="tipo_contrato")
 
 if 'Días sueltos' in tipo_contrato:
-    bruto_dia = st.number_input("¿Cuál es tu salario bruto?", min_value=0.0, step=1.0, format="%.f", key="bruto_dia")
+    bruto_dia = st.number_input("¿Cuál es tu salario bruto?", min_value=0.0, step=10.0, format="%.f", key="bruto_dia")
     horas_base = st.number_input("¿De cuántas horas es la jornada?", min_value=1.0, value=8.0, step=1.0, format="%.f", key="h_base")
     precio_hora_base = bruto_dia / horas_base if horas_base > 0 else 0
-    jornadas = st.number_input("¿Cuántas jornadas son?", min_value=0.0, step=0.5, key="jornadas_sueltas")
+    jornadas = st.number_input("¿Cuántas jornadas son?", min_value=0, step=0.5, format="%d", key="jornadas_sueltas")
 else:
-    salario_mes_bruto = st.number_input("¿Cuál es tu salario bruto?", min_value=0.0, step=1.0, format="%.f", key="s_mes")
+    salario_mes_bruto = st.number_input("¿Cuál es tu salario bruto?", min_value=0.0, step=100.0, format="%.f", key="s_mes")
     h_sem = st.number_input("¿Horas semanales?", min_value=1.0, step=1.0, value=40.0, format="%.f", key="h_sem")
     bruto_dia = salario_mes_bruto / 30
     precio_hora_base = (bruto_dia * 7) / h_sem
     mes_entero = st.radio("¿Has trabajado el mes entero?", ('Sí', 'No'), key="mes_entero")
-    jornadas = 30.0 if mes_entero == 'Sí' else st.number_input("¿Cuántos días has trabajado?", min_value=0.0, max_value=30.0, step=0.5, format="%.1f", key="dias_mes")
+    jornadas = 30.0 if mes_entero == 'Sí' else st.number_input("¿Cuántos días has trabajado?", min_value=0.0, max_value=30.0, step=0.5, format="%d", key="dias_mes")
 
 regimen = st.selectbox("Selecciona Régimen de la SS", ["Artistas", "General"], key="regimen")
 irpf_sugerido = 2 if regimen == "Artistas" else 15
