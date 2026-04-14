@@ -3,17 +3,11 @@ import streamlit as st
 # Configuración de página
 st.set_page_config(page_title="Calculadora Nómina Cine", page_icon="🎬")
 
-# Estilo CSS definitivo para limpiar la interfaz
+# Estilo CSS para eliminar cajas de botones, flechas y compactar todo
 st.markdown("""
     <style>
-    /* Ocultar cualquier rastro de texto de flechas generado por error */
-    [data-testid="stExpander"] svg {
-        display: none !important;
-    }
-    [data-testid="stExpander"] div:contains("arrow") {
-        color: transparent !important;
-        font-size: 0px !important;
-    }
+    /* Adiós a las flechas y textos locos */
+    .streamlit-expanderHeader { display: none !important; }
     
     /* Uniformar fuentes */
     html, body, [class*="st-"] {
@@ -29,7 +23,7 @@ st.markdown("""
         height: 3em;
     }
     
-    /* Botón Nuevo cálculo (Discreto y limpio) */
+    /* Botón Nuevo cálculo (Discreto) */
     div.stButton > button:not([kind="primary"]) {
         background-color: transparent;
         color: #4682B4;
@@ -38,34 +32,46 @@ st.markdown("""
         height: 3em;
     }
 
-    /* Quitar recuadros de botones X y compactar lista */
+    /* Botones X: sin recuadro, solo la letra */
     div[data-testid="stHorizontalBlock"] button {
         border: none !important;
         background-color: transparent !important;
         color: #888 !important;
         box-shadow: none !important;
         padding: 0 !important;
+        min-height: 0px !important;
+        line-height: 1 !important;
     }
+
+    /* Interlineado mínimo para acumulados */
     .stMarkdown p {
+        margin-top: 0px !important;
         margin-bottom: 2px !important;
+    }
+    
+    /* Estilo de los contenedores de Otros Conceptos */
+    .custom-container {
+        border: 1px solid #ddd;
+        border-radius: 10px;
+        padding: 15px;
+        margin-bottom: 10px;
     }
     </style>
 """, unsafe_allow_html=True)
 
 st.title("Calculadora de nómina")
 
-# Función para limpiar TODO el formulario
+# Función para reiniciar formulario
 def limpiar_todo():
     for key in st.session_state.keys():
         del st.session_state[key]
     st.rerun()
 
-# Inicialización de estados
 if 'extras_lista' not in st.session_state: st.session_state.extras_lista = []
 if 'dietas' not in st.session_state: 
     st.session_state.dietas = {"comida": 0, "cena": 0, "sin": 0, "con": 0}
 
-# --- SELECTOR DE CONTRATO ---
+# --- DATOS BASE ---
 tipo_contrato = st.radio("¿Qué tipo de contrato tienes?", ('📅 Días sueltos', '🗓 Mes'), key="tipo_contrato")
 
 if 'Días sueltos' in tipo_contrato:
@@ -81,15 +87,15 @@ else:
     mes_entero = st.radio("¿Has trabajado el mes entero?", ('Sí', 'No'), key="mes_entero")
     jornadas = 30 if mes_entero == 'Sí' else st.number_input("¿Cuántos días has trabajado?", min_value=1, max_value=30, step=1, key="dias_mes")
 
-# --- RÉGIMEN E IRPF ---
 regimen = st.selectbox("Selecciona Régimen de la SS", ["Artistas", "General"], key="regimen")
 irpf_sugerido = 2 if regimen == "Artistas" else 15
 irpf = st.number_input("¿Cuál es tu IRPF? (0 para mínimo)", value=int(irpf_sugerido), step=1, format="%d", key="irpf_val")
 
-st.subheader("Otros conceptos")
+st.write("### Otros conceptos")
 
-# --- EXTRAS ---
-with st.expander("Añadir Horas Extras / Festivas"):
+# --- SECCIÓN EXTRAS (Sin expanders problemáticos) ---
+with st.container(border=True):
+    st.write("**Añadir Horas Extras / Festivas**")
     col_qty, col_mult = st.columns(2)
     e_qty = col_qty.number_input("¿Cuántas?", min_value=0.0, step=1.0, format="%.f", key="e_qty")
     e_mult = col_mult.number_input("Factor (ej. 1,5)", min_value=1.0, value=1.5, step=0.1, key="e_mult")
@@ -104,7 +110,7 @@ with st.expander("Añadir Horas Extras / Festivas"):
             st.rerun()
 
     if st.session_state.extras_lista:
-        st.write("**Añadidas:**")
+        st.write("---")
         for i, ex in enumerate(st.session_state.extras_lista):
             c_ex, c_del = st.columns([0.9, 0.1])
             c_ex.write(f"⚡️ {ex['desc']}")
@@ -112,8 +118,9 @@ with st.expander("Añadir Horas Extras / Festivas"):
                 st.session_state.extras_lista.pop(i)
                 st.rerun()
 
-# --- DIETAS ---
-with st.expander("Añadir Dietas"):
+# --- SECCIÓN DIETAS (Sin expanders problemáticos) ---
+with st.container(border=True):
+    st.write("**Añadir Dietas**")
     c1, c2 = st.columns(2)
     if c1.button("🌯 Media comida (14,02€)"): st.session_state.dietas["comida"] += 1; st.rerun()
     if c2.button("🍽 Media cena (16,36€)"): st.session_state.dietas["cena"] += 1; st.rerun()
@@ -127,9 +134,10 @@ with st.expander("Añadir Dietas"):
     if st.session_state.dietas["con"] > 0: d_str.append(f"💤 x{st.session_state.dietas['con']}")
     
     if d_str:
-        st.write("**Acumulado:**")
-        st.write(" | ".join(d_str))
-        if st.button("Limpiar dietas"):
+        st.write("---")
+        c_res, c_clr = st.columns([0.9, 0.1])
+        c_res.write(f"✈️ {' | '.join(d_str)}")
+        if c_clr.button("X", key="clear_dietas"):
             st.session_state.dietas = {k:0 for k in st.session_state.dietas}
             st.rerun()
 
@@ -138,7 +146,7 @@ especiales_qty = st.number_input("¿Cuántas?", min_value=1, step=1, key="qty_es
 
 liq_opcion = st.selectbox("¿Las vacaciones y el finiquito van aparte?", ['No, calcular', 'Ambas', 'Sólo vacaciones', 'Sólo finiquito'], key="liq_val")
 
-# --- CÁLCULO ---
+# --- CÁLCULO FINAL ---
 st.write("")
 if st.button("Calcular total", type="primary", use_container_width=True):
     b_base = (bruto_dia * jornadas) + (especiales_qty * 20)
@@ -168,6 +176,6 @@ if st.button("Calcular total", type="primary", use_container_width=True):
         st.write(f"   • {liq_neta:.2f}€ netos (Bruto: {liq_bruta:.2f}€)")
     st.markdown(f"## Total: {total_final:.2f}€")
 
-# Botón Nuevo Cálculo (limpia TODO)
+# Botón Nuevo Cálculo
 for _ in range(3): st.write("")
 st.button("Nuevo cálculo", use_container_width=True, on_click=limpiar_todo)
