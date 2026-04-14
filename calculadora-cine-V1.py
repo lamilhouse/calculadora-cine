@@ -3,7 +3,7 @@ import streamlit as st
 # Configuración de página
 st.set_page_config(page_title="Calculadora Nómina Cine", page_icon="🎬")
 
-# --- ESTILO CSS DEFINITIVO ---
+# --- ESTILO CSS DEFINITIVO (RESTAURADO) ---
 st.markdown("""
     <style>
     .streamlit-expanderHeader { display: none !important; }
@@ -43,19 +43,17 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# --- LÓGICA DE LIMPIEZA TOTAL ---
+# Lógica de reset (Solo para limpiar widgets rebeldes)
 if 'reset_counter' not in st.session_state:
     st.session_state.reset_counter = 0
 
 def limpiar_todo():
-    # Limpiamos las listas de datos
-    st.session_state.extras_lista = []
-    st.session_state.dietas = {"comida": 0, "cena": 0, "sin": 0, "con": 0}
-    # Incrementamos el contador para forzar a Streamlit a regenerar los widgets (limpia checkbox e inputs)
+    for key in list(st.session_state.keys()):
+        if key != 'reset_counter':
+            del st.session_state[key]
     st.session_state.reset_counter += 1
 
-# Usamos el contador como sufijo para los keys de los widgets que daban problemas
-reset_id = st.session_state.reset_counter
+r_id = st.session_state.reset_counter
 
 st.title("Calculadora de nómina")
 
@@ -64,44 +62,43 @@ if 'dietas' not in st.session_state:
     st.session_state.dietas = {"comida": 0, "cena": 0, "sin": 0, "con": 0}
 
 # --- DATOS BASE ---
-tipo_contrato = st.radio("¿Qué tipo de contrato tienes?", ('📅 Días sueltos', '🗓 Mes'), key=f"tipo_contrato_{reset_id}")
+tipo_contrato = st.radio("¿Qué tipo de contrato tienes?", ('📅 Días sueltos', '🗓 Mes'), key=f"tipo_{r_id}")
 
 if 'Días sueltos' in tipo_contrato:
-    bruto_dia = st.number_input("¿Cuál es tu salario bruto?", min_value=0.0, step=1.0, format="%g", key=f"bruto_dia_{reset_id}")
-    horas_base = st.number_input("¿De cuántas horas es la jornada?", min_value=1.0, value=8.0, step=0.5, format="%g", key=f"h_base_{reset_id}")
+    bruto_dia = st.number_input("¿Cuál es tu salario bruto?", min_value=0.0, step=100.0, format="%g", key=f"bdia_{r_id}")
+    horas_base = st.number_input("¿De cuántas horas es la jornada?", min_value=1.0, value=8.0, step=1.0, format="%g", key=f"hbase_{r_id}")
     precio_hora_base = bruto_dia / horas_base if horas_base > 0 else 0
-    jornadas = st.number_input("¿Cuántas jornadas son?", min_value=0.0, step=0.5, format="%g", key=f"jornadas_sueltas_{reset_id}")
+    jornadas = st.number_input("¿Cuántas jornadas son?", min_value=0.0, step=1.0, format="%g", key=f"jsuelta_{r_id}")
 else:
-    salario_mes_bruto = st.number_input("¿Cuál es tu salario bruto?", min_value=0.0, step=1.0, format="%g", key=f"s_mes_{reset_id}")
-    h_sem = st.number_input("¿Horas semanales?", min_value=1.0, step=1.0, value=40.0, format="%g", key=f"h_sem_{reset_id}")
+    salario_mes_bruto = st.number_input("¿Cuál es tu salario bruto?", min_value=0.0, step=100.0, format="%g", key=f"smes_{r_id}")
+    h_sem = st.number_input("¿Horas semanales?", min_value=1.0, step=1.0, value=40.0, format="%g", key=f"hsem_{r_id}")
     bruto_dia = salario_mes_bruto / 30
     precio_hora_base = (bruto_dia * 7) / h_sem
-    mes_entero = st.radio("¿Has trabajado el mes entero?", ('Sí', 'No'), key=f"mes_entero_{reset_id}")
-    jornadas = 30.0 if mes_entero == 'Sí' else st.number_input("¿Cuántos días has trabajado?", min_value=0.0, max_value=30.0, step=0.5, format="%g", key=f"dias_mes_{reset_id}")
+    mes_entero = st.radio("¿Has trabajado el mes entero?", ('Sí', 'No'), key=f"mentero_{r_id}")
+    jornadas = 30.0 if mes_entero == 'Sí' else st.number_input("¿Cuántos días has trabajado?", min_value=0.0, max_value=30.0, step=1.0, format="%g", key=f"dmes_{r_id}")
 
-regimen = st.selectbox("Selecciona Régimen de la SS", ["Artistas", "General"], key=f"regimen_{reset_id}")
+regimen = st.selectbox("Selecciona Régimen de la SS", ["Artistas", "General"], key=f"reg_{r_id}")
 irpf_sugerido = 2 if regimen == "Artistas" else 15
-irpf = st.number_input("¿Cuál es tu IRPF?", value=int(irpf_sugerido), step=1, format="%d", key=f"irpf_val_{reset_id}")
+irpf = st.number_input("¿Cuál es tu IRPF?", value=int(irpf_sugerido), step=1, format="%d", key=f"irpf_{r_id}")
 
 st.write("### Otros conceptos")
 
-# --- BLOQUE EXTRAS (RESUELTO EL PROBLEMA DE SUGERENCIA) ---
+# --- EXTRAS ---
 with st.container(border=True):
     st.write("**Añadir Horas Extras / Festivas**")
     col_qty, col_mult = st.columns(2)
-    # Al resetear el ID del key, el input vuelve a 0 automáticamente
-    e_qty = col_qty.number_input("¿Cuántas?", min_value=0.0, step=0.5, format="%g", value=0.0, key=f"e_qty_{reset_id}")
-    e_mult = col_mult.number_input("Factor (ej. 1,5)", min_value=1.0, value=1.5, step=0.1, format="%g", key=f"e_mult_{reset_id}")
-    e_tipo = st.radio("Tipo de hora", ('Hora Extra', 'Festiva, otras...'), key=f"e_tipo_{reset_id}")
+    e_qty = col_qty.number_input("¿Cuántas?", min_value=0.0, step=1.0, format="%g", key=f"eqty_{r_id}")
+    e_mult = col_mult.number_input("Factor (ej. 1,5)", min_value=1.0, value=1.5, step=0.1, format="%g", key=f"emult_{r_id}")
+    e_tipo = st.radio("Tipo de hora", ('Hora Extra', 'Festiva, otras...'), key=f"etipo_{r_id}")
     
     if st.button("Añadir estas horas"):
         if e_qty > 0:
             ss_rate = 0.047 if 'Extra' in e_tipo else 0.0653
             bruto_t = (precio_hora_base * e_mult) * e_qty
             neto_t = bruto_t * (1 - ss_rate - (irpf/100))
-            val_qty = f"{e_qty:g}".replace('.', ',')
+            qty_label = f"{e_qty:g}".replace('.', ',')
             st.session_state.extras_lista.append({
-                'desc': f"{val_qty}h {e_tipo} (x{e_mult:g})", 
+                'desc': f"{qty_label}h {e_tipo} (x{e_mult:g})", 
                 'bruto': bruto_t, 
                 'neto': neto_t
             })
@@ -116,7 +113,7 @@ with st.container(border=True):
                 st.session_state.extras_lista.pop(i)
                 st.rerun()
 
-# --- BLOQUE DIETAS ---
+# --- DIETAS ---
 with st.container(border=True):
     st.write("**Añadir Dietas**")
     c1, c2 = st.columns(2)
@@ -135,18 +132,18 @@ with st.container(border=True):
         st.write("---")
         c_res, c_clr = st.columns([0.9, 0.1])
         c_res.write(f"{' | '.join(d_str)}")
-        if c_clr.button("X", key=f"clear_dietas_{reset_id}"):
+        if c_clr.button("X", key=f"clr_dietas_{r_id}"):
             st.session_state.dietas = {k:0 for k in st.session_state.dietas}
             st.rerun()
 
-# --- JORNADAS ESPECIALES (RESUELTO EL DESCLICK) ---
-especial = st.checkbox("¿Alguna jornada especial? (+20€)", value=False, key=f"check_esp_{reset_id}")
-especiales_qty = st.number_input("¿Cuántas?", min_value=0.0, step=0.5, format="%g", value=0.0, key=f"qty_esp_{reset_id}") if especial else 0
+# --- JORNADAS ESPECIALES Y PLUS (FIX LIMPIEZA) ---
+especial = st.checkbox("¿Alguna jornada especial? (+20€)", key=f"cesp_{r_id}")
+especiales_qty = st.number_input("¿Cuántas?", min_value=1, step=1, format="%d", key=f"qesp_{r_id}") if especial else 0
 
-plus_consec = st.checkbox("¿Plus 4 jornadas consecutivas (+35€)?", value=False, key=f"check_plus_{reset_id}")
-plus_consec_qty = st.number_input("¿Cuántos?", min_value=1, step=1, format="%d", key=f"qty_plus_{reset_id}") if plus_consec else 0
+plus_consec = st.checkbox("¿Plus 4 jornadas consecutivas (+35€)?", key=f"cplus_{r_id}")
+plus_consec_qty = st.number_input("¿Cuántos?", min_value=1, step=1, format="%d", key=f"qplus_{r_id}") if plus_consec else 0
 
-liq_opcion = st.selectbox("¿Vacaciones y finiquito aparte?", ['No, calcular', 'Todo aparte', 'Vacaciones aparte', 'Finiquito aparte'], key=f"liq_val_{reset_id}")
+liq_opcion = st.selectbox("¿Vacaciones y finiquito aparte?", ['No, calcular', 'Todo aparte', 'Vacaciones aparte', 'Finiquito aparte'], key=f"lval_{r_id}")
 
 # --- PROCESADO ---
 st.write("")
@@ -176,5 +173,4 @@ if st.button("Calcular total", type="primary", use_container_width=True):
     st.markdown(f"## Total: {total_final:.2f}€")
 
 for _ in range(3): st.write("")
-# Botón de reinicio que ahora sí limpia todo de verdad
 st.button("Nuevo cálculo", use_container_width=True, on_click=limpiar_todo)
