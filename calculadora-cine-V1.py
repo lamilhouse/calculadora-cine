@@ -61,7 +61,7 @@ if 'Días sueltos' in tipo_contrato:
     bruto_dia = st.number_input("¿Cuál es tu salario bruto?", min_value=0.0, step=1.0, format="%.f", key="bruto_dia")
     horas_base = st.number_input("¿De cuántas horas es la jornada?", min_value=1.0, value=8.0, step=1.0, format="%.f", key="h_base")
     precio_hora_base = bruto_dia / horas_base if horas_base > 0 else 0
-    jornadas = st.number_input("¿Cuántas jornadas son?", min_value=0.0, step=0.5, format="%.1f", key="jornadas_sueltas")
+    jornadas = st.number_input("¿Cuántas jornadas son?", min_value=0.0, step=0.5, key="jornadas_sueltas")
 else:
     salario_mes_bruto = st.number_input("¿Cuál es tu salario bruto?", min_value=0.0, step=1.0, format="%.f", key="s_mes")
     h_sem = st.number_input("¿Horas semanales?", min_value=1.0, step=1.0, value=40.0, format="%.f", key="h_sem")
@@ -129,7 +129,7 @@ with st.container(border=True):
             st.rerun()
 
 especial = st.checkbox("¿Alguna jornada especial? (+20€)", key="check_esp")
-especiales_qty = st.number_input("¿Cuántas?", min_value=0.5, step=0.5, format="%.1f", key="qty_esp") if especial else 0
+especiales_qty = st.number_input("¿Cuántas?", min_value=1, step=1, key="qty_esp") if especial else 0
 
 plus_consec = st.checkbox("¿Plus 4 jornadas consecutivas (+35€)?", key="check_plus")
 plus_consec_qty = st.number_input("¿Cuántos?", min_value=1, step=1, key="qty_plus") if plus_consec else 0
