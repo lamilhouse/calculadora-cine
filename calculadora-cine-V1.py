@@ -183,7 +183,8 @@ st.button("Nuevo cálculo", use_container_width=True, on_click=limpiar_todo)
 st.write("") 
 st.write("---") 
 
-with st.expander("Información, privacidad y contacto"):
+with st.expander("ℹ️ Información, Privacidad y Contacto"):
+    st.markdown("""
 
     ### Cómo tener la app en tu móvil
     Si quieres tener esta calculadora siempre a mano, puedes crear un **acceso directo** en tu pantalla de inicio:
