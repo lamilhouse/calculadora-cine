@@ -176,40 +176,24 @@ st.write("---")
 with st.expander("ℹ️ Información, Privacidad y Contacto"):
     st.markdown("""
     <br>
-    
     ### Cómo tener la app en tu móvil
     Si quieres tener esta calculadora siempre a mano puedes crear un **acceso directo** en tu pantalla de inicio:
-    
+     <br>
     1. Abre el enlace desde el navegador de tu móvil.
     2. Pulsa el botón **Compartir** (en iOS) o los **tres puntos** (en Android).
     3. Selecciona la opción **Añadir a pantalla de inicio**.
     4. Si no te aparece en el inicio la encontrarás entre tus apps como **Streamlit**.
-
-    &nbsp;
-    ---
-    &nbsp;
-    
+     <br>
     ### Normativa y prácticas del sector
     Los cálculos se realizan tomando como referencia la normativa vigente (convenio colectivo, normativa de la Seguridad Social, tablas de IRPF, conceptos salariales estándar...). 
-    
     No obstante, cuando hemos observado contradicciones entre la normativa y prácticas habituales (siempre dentro de la legalidad), hemos realizado los cálculos basándonos en estas últimas para hacer el resultado lo más realista posible.
-
-    &nbsp;
-    ---
-    &nbsp;
-    
+ <br>
     ### Privacidad
     Esta aplicación **no almacena ningún dato introducido**. Ni salarios, ni horas, ni retenciones. Al cerrar la pestaña del navegador o pulsar el botón "Nuevo cálculo", todos los datos introducidos desaparecen para siempre.  
-
     <br>
-
     **IMPORTANTE**
-    
     Los resultados ofrecidos por esta calculadora son meramente informativos y orientativos. En ningún caso tienen carácter vinculante ni valor legal oficial. Esta herramienta no sustituye el asesoramiento de un profesional o la información proporcionada por los departamentos de RRHH. La creadora de esta aplicación no se hace responsable de discrepancias entre los resultados de la app y las nóminas reales.  
-
     <br>
-    
     👉 [**Envíanos tus comentarios, dudas, sugerencias...**](https://forms.gle/CWvr3USetYqbdam8A)
-    
     <br>
     """, unsafe_allow_html=True)
