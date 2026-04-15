@@ -182,6 +182,7 @@ st.write("---")
 with st.container(border=True):
     st.markdown("""
     <div style="padding: 10px;">
+    
     ### Cómo tener la app en tu móvil
     Si quieres tener esta calculadora siempre a mano puedes crear un **acceso directo** en tu pantalla de inicio:
     1. Abre el enlace desde el navegador de tu móvil
