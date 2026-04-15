@@ -6,9 +6,12 @@ st.set_page_config(page_title="Calculadora Nómina Cine", page_icon="🎬")
 # --- ESTILO CSS DEFINITIVO ---
 st.markdown("""
     <style>
-    .streamlit-expanderHeader { display: none !important; }
+    /* HEMOS QUITADO LA LÍNEA DEL EXPANDERHEADER */
     html, body, [class*="st-"] {
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    </style>
+""", unsafe_allow_html=True)
     }
     div.stButton > button[kind="primary"] {
         background-color: #4682B4;
