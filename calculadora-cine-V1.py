@@ -199,6 +199,7 @@ with st.container(border=True):
     <br>
     
     **IMPORTANTE**
+     <br>
     Los resultados ofrecidos por esta calculadora son meramente informativos y orientativos. En ningún caso tienen carácter vinculante ni valor legal. Esta herramienta no sustituye el asesoramiento de un profesional o la información proporcionada por los departamentos de RRHH. La creadora de esta aplicación no se hace responsable de discrepancias entre los resultados de la app y las nóminas reales.  
     
     <br>            
