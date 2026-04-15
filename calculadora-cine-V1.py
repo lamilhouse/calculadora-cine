@@ -198,9 +198,10 @@ with st.expander("ℹ️ Información, Privacidad y Contacto"):
 
     ### Privacidad
     Esta aplicación **no almacena ningún dato introducido**. Ni salarios, ni horas, ni retenciones. Al cerrar la pestaña del navegador o pulsar el botón "Nuevo cálculo", todos los datos introducidos desaparecen para siempre.  
-     <br>
+    <br>
     **IMPORTANTE** 
+    <br>
     Los resultados ofrecidos por esta calculadora son meramente informativos y orientativos. En ningún caso tienen carácter vinculante ni valor legal oficial. Esta herramienta no sustituye el asesoramiento de un profesional gestor o la información proporcionada por los departamentos de RRHH. El creador de esta aplicación no se hace responsable de discrepancias entre los resultados de la app y las nóminas reales.  
-     <br>   
+    <br>   
     👉 [**Envíanos tus comentarios, dudas, sugerencias... haciendo clic aquí**](https://forms.gle/CWvr3USetYqbdam8A)
     """, unsafe_allow_html=True)
