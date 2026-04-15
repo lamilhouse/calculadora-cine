@@ -45,48 +45,52 @@ st.markdown("""
 
 st.title("Calculadora de nómina")
 
-# --- FUNCIÓN DE LIMPIEZA CORREGIDA ---
-def limpiar_todo():
-    # Borramos todo el estado de la sesión
-    for key in st.session_state.keys():
-        del st.session_state[key]
-    # Forzamos a Streamlit a limpiar los widgets visuales
-    st.cache_data.clear()
+# --- LÓGICA DE REINICIO (Único cambio real) ---
+if 'form_id' not in st.session_state:
+    st.session_state.form_id = 0
 
-# Inicialización de variables de estado si no existen
+def limpiar_todo():
+    for key in list(st.session_state.keys()):
+        if key != 'form_id':
+            del st.session_state[key]
+    st.session_state.form_id += 1 # Al cambiar este número, todos los inputs se fuerzan a resetear
+
+# Usamos el form_id para que los widgets se regeneren de cero
+fid = st.session_state.form_id
+
 if 'extras_lista' not in st.session_state: st.session_state.extras_lista = []
 if 'dietas' not in st.session_state: 
     st.session_state.dietas = {"comida": 0, "cena": 0, "sin": 0, "con": 0}
 
-# --- DATOS BASE (CORREGIDOS CON %g) ---
-tipo_contrato = st.radio("¿Qué tipo de contrato tienes?", ('📅 Días sueltos', '🗓 Mes'), key="tipo_contrato")
+# --- DATOS BASE ---
+tipo_contrato = st.radio("¿Qué tipo de contrato tienes?", ('📅 Días sueltos', '🗓 Mes'), key=f"tipo_contrato_{fid}")
 
 if 'Días sueltos' in tipo_contrato:
-    bruto_dia = st.number_input("¿Cuál es tu salario bruto?", min_value=0.0, step=100.0, format="%g", key="bruto_dia")
-    horas_base = st.number_input("¿De cuántas horas es la jornada?", min_value=1.0, value=8.0, step=1.0, format="%g", key="h_base")
+    bruto_dia = st.number_input("¿Cuál es tu salario bruto?", min_value=0.0, step=100.0, format="%g", key=f"bruto_dia_{fid}")
+    horas_base = st.number_input("¿De cuántas horas es la jornada?", min_value=1.0, value=8.0, step=1.0, format="%g", key=f"h_base_{fid}")
     precio_hora_base = bruto_dia / horas_base if horas_base > 0 else 0
-    jornadas = st.number_input("¿Cuántas jornadas son?", min_value=0.0, step=1.0, format="%g", key="jornadas_sueltas")
+    jornadas = st.number_input("¿Cuántas jornadas son?", min_value=0.0, step=1.0, format="%g", key=f"jornadas_sueltas_{fid}")
 else:
-    salario_mes_bruto = st.number_input("¿Cuál es tu salario bruto?", min_value=0.0, step=100.0, format="%g", key="s_mes")
-    h_sem = st.number_input("¿Horas semanales?", min_value=1.0, step=1.0, value=40.0, format="%g", key="h_sem")
+    salario_mes_bruto = st.number_input("¿Cuál es tu salario bruto?", min_value=0.0, step=100.0, format="%g", key=f"s_mes_{fid}")
+    h_sem = st.number_input("¿Horas semanales?", min_value=1.0, step=1.0, value=40.0, format="%g", key=f"h_sem_{fid}")
     bruto_dia = salario_mes_bruto / 30
     precio_hora_base = (bruto_dia * 7) / h_sem
-    mes_entero = st.radio("¿Has trabajado el mes entero?", ('Sí', 'No'), key="mes_entero")
-    jornadas = 30.0 if mes_entero == 'Sí' else st.number_input("¿Cuántos días han trabajado?", min_value=0.0, max_value=30.0, step=1.0, format="%g", key="dias_mes")
+    mes_entero = st.radio("¿Has trabajado el mes entero?", ('Sí', 'No'), key=f"mes_entero_{fid}")
+    jornadas = 30.0 if mes_entero == 'Sí' else st.number_input("¿Cuántos días has trabajado?", min_value=0.0, max_value=30.0, step=1.0, format="%g", key=f"dias_mes_{fid}")
 
-regimen = st.selectbox("Selecciona Régimen de la SS", ["Artistas", "General"], key="regimen")
+regimen = st.selectbox("Selecciona Régimen de la SS", ["Artistas", "General"], key=f"regimen_{fid}")
 irpf_sugerido = 2 if regimen == "Artistas" else 15
-irpf = st.number_input("¿Cuál es tu IRPF?", value=int(irpf_sugerido), step=1, format="%d", key="irpf_val")
+irpf = st.number_input("¿Cuál es tu IRPF?", value=int(irpf_sugerido), step=1, format="%d", key=f"irpf_val_{fid}")
 
 st.write("### Otros conceptos")
 
-# --- EXTRAS (CORREGIDOS CON %g) ---
+# --- EXTRAS ---
 with st.container(border=True):
     st.write("**Añadir Horas Extras / Festivas**")
     col_qty, col_mult = st.columns(2)
-    e_qty = col_qty.number_input("¿Cuántas?", min_value=0.0, step=1.0, format="%g", key="e_qty")
-    e_mult = col_mult.number_input("Factor (ej. 1,5)", min_value=1.0, value=1.5, step=0.1, format="%g", key="e_mult")
-    e_tipo = st.radio("Tipo de hora", ('Hora Extra', 'Festiva, otras...'), key="e_tipo")
+    e_qty = col_qty.number_input("¿Cuántas?", min_value=0.0, step=1.0, format="%g", key=f"e_qty_{fid}")
+    e_mult = col_mult.number_input("Factor (ej. 1,5)", min_value=1.0, value=1.5, step=0.1, format="%g", key=f"e_mult_{fid}")
+    e_tipo = st.radio("Tipo de hora", ('Hora Extra', 'Festiva, otras...'), key=f"e_tipo_{fid}")
     
     if st.button("Añadir estas horas"):
         if e_qty > 0:
@@ -133,13 +137,13 @@ with st.container(border=True):
             st.session_state.dietas = {k:0 for k in st.session_state.dietas}
             st.rerun()
 
-especial = st.checkbox("¿Alguna jornada especial? (+20€)", key="check_esp")
-especiales_qty = st.number_input("¿Cuántas?", min_value=1, step=1, format="%d", key="qty_esp") if especial else 0
+especial = st.checkbox("¿Alguna jornada especial? (+20€)", key=f"check_esp_{fid}")
+especiales_qty = st.number_input("¿Cuántas?", min_value=1, step=1, format="%d", key=f"qty_esp_{fid}") if especial else 0
 
-plus_consec = st.checkbox("¿Plus 4 jornadas consecutivas (+35€)?", key="check_plus")
-plus_consec_qty = st.number_input("¿Cuántos?", min_value=1, step=1, format="%d", key="qty_plus") if plus_consec else 0
+plus_consec = st.checkbox("¿Plus 4 jornadas consecutivas (+35€)?", key=f"check_plus_{fid}")
+plus_consec_qty = st.number_input("¿Cuántos?", min_value=1, step=1, format="%d", key=f"qty_plus_{fid}") if plus_consec else 0
 
-liq_opcion = st.selectbox("¿Vacaciones y finiquito aparte?", ['No, calcular', 'Todo aparte', 'Vacaciones aparte', 'Finiquito aparte'], key="liq_val")
+liq_opcion = st.selectbox("¿Vacaciones y finiquito aparte?", ['No, calcular', 'Todo aparte', 'Vacaciones aparte', 'Finiquito aparte'], key=f"liq_val_{fid}")
 
 # --- PROCESADO ---
 st.write("")
@@ -169,10 +173,7 @@ if st.button("Calcular total", type="primary", use_container_width=True):
     st.markdown(f"## Total: {total_final:.2f}€")
 
 for _ in range(3): st.write("")
-# El botón ahora llama a la función de limpieza y reinicia la app por completo
-if st.button("Nuevo cálculo", use_container_width=True):
-    limpiar_todo()
-    st.rerun()
+st.button("Nuevo cálculo", use_container_width=True, on_click=limpiar_todo)
 
 # --- SECCIÓN DE INFORMACIÓN, PRIVACIDAD Y CONTACTO ---
 st.write("") 
@@ -181,7 +182,6 @@ st.write("---")
 with st.container(border=True):
     st.markdown("""
     <div style="padding: 10px;">
-
     ### Cómo tener la app en tu móvil
     Si quieres tener esta calculadora siempre a mano puedes crear un **acceso directo** en tu pantalla de inicio:
     1. Abre el enlace desde el navegador de tu móvil
@@ -203,6 +203,5 @@ with st.container(border=True):
     <br>            
     
     [**Envíanos tus comentarios, dudas, sugerencias...**](https://forms.gle/CWvr3USetYqbdam8A)
-    
     </div>
     """, unsafe_allow_html=True)
