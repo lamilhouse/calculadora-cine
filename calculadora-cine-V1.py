@@ -187,15 +187,14 @@ with st.expander("ℹ️ Información, Privacidad y Contacto"):
     st.markdown("""
 
     ### Cómo tener la app en tu móvil
-    Si quieres tener esta calculadora siempre a mano, puedes crear un **acceso directo** en tu pantalla de inicio:
+    Si quieres tener esta calculadora siempre a mano puedes crear un **acceso directo** en tu pantalla de inicio:
     1. Abre el enlace desde el navegador de tu móvil
     2. Pulsa el botón **Compartir** (en iOS) o los **tres puntos** (en Android).
-    3. Selecciona la opción **"Añadir a pantalla de inicio"**.
-    4. Si no te aparece en el inicio la encontrarás entre tus apps como "Streamlit"
+    3. Selecciona la opción **Añadir a pantalla de inicio**.
+    4. Si no te aparece en el inicio la encontrarás entre tus apps como **Streamlit**
 
     ### Normativa y prácticas del sector
-    Los cálculos se realizan tomando como referencia la normativa vigente (convenio colectivo, normativa de la Seguridad Social, tablas de IRPF, conceptos salariales estándar...). No obstante, nos encontraremos algún apartado donde la lógica de la app se basa en las prácticas más habituales y extendidas de nuestra industria, lo cual puede hacer que no coincida exactamente tu nómina con el resultado mostrado.  
-
+    Los cálculos se realizan tomando como referencia la normativa vigente (convenio colectivo, normativa de la Seguridad Social, tablas de IRPF, conceptos salariales estándar...). No obstante, cuando hemos observado contradicciones entre la normativa y práctivas habituales, siempre dentro de la legalidad, hemos aplicado el cálculo basándonos en estas últimas para hacer el resultado lo más realista posible.
     ### Privacidad
     Esta aplicación **no almacena ningún dato introducido**. Ni salarios, ni horas, ni retenciones. Al cerrar la pestaña del navegador o pulsar el botón "Nuevo cálculo", todos los datos introducidos desaparecen para siempre.  
     <br>
