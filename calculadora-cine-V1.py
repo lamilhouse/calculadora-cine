@@ -186,8 +186,8 @@ with st.container(border=True):
     ### Cómo tener la app en tu móvil
     Si quieres tener esta calculadora siempre a mano puedes crear un **acceso directo** en tu pantalla de inicio:
     1. Abre el enlace desde el navegador de tu móvil
-    2. Pulsa el botón **Compartir** (en iOS) o los **tres puntos** (en Android).
-    3. Selecciona la opción **Añadir a pantalla de inicio**.
+    2. Pulsa el botón **Compartir** (en iOS) o los **tres puntos** (en Android)
+    3. Selecciona la opción **Añadir a pantalla de inicio**
     4. Si no te aparece en el inicio la encontrarás entre tus apps como **Streamlit**
 
     ### Normativa y prácticas del sector
