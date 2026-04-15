@@ -45,11 +45,15 @@ st.markdown("""
 
 st.title("Calculadora de nómina")
 
-# --- FUNCIÓN DE LIMPIEZA ---
+# --- FUNCIÓN DE LIMPIEZA CORREGIDA ---
 def limpiar_todo():
+    # Borramos todo el estado de la sesión
     for key in st.session_state.keys():
         del st.session_state[key]
+    # Forzamos a Streamlit a limpiar los widgets visuales
+    st.cache_data.clear()
 
+# Inicialización de variables de estado si no existen
 if 'extras_lista' not in st.session_state: st.session_state.extras_lista = []
 if 'dietas' not in st.session_state: 
     st.session_state.dietas = {"comida": 0, "cena": 0, "sin": 0, "con": 0}
@@ -68,7 +72,7 @@ else:
     bruto_dia = salario_mes_bruto / 30
     precio_hora_base = (bruto_dia * 7) / h_sem
     mes_entero = st.radio("¿Has trabajado el mes entero?", ('Sí', 'No'), key="mes_entero")
-    jornadas = 30.0 if mes_entero == 'Sí' else st.number_input("¿Cuántos días has trabajado?", min_value=0.0, max_value=30.0, step=1.0, format="%g", key="dias_mes")
+    jornadas = 30.0 if mes_entero == 'Sí' else st.number_input("¿Cuántos días han trabajado?", min_value=0.0, max_value=30.0, step=1.0, format="%g", key="dias_mes")
 
 regimen = st.selectbox("Selecciona Régimen de la SS", ["Artistas", "General"], key="regimen")
 irpf_sugerido = 2 if regimen == "Artistas" else 15
@@ -89,7 +93,6 @@ with st.container(border=True):
             ss_rate = 0.047 if 'Extra' in e_tipo else 0.0653
             bruto_t = (precio_hora_base * e_mult) * e_qty
             neto_t = bruto_t * (1 - ss_rate - (irpf/100))
-            # Formateo limpio para la lista
             qty_label = f"{e_qty:g}".replace('.', ',')
             st.session_state.extras_lista.append({
                 'desc': f"{qty_label}h {e_tipo} (x{e_mult:g})", 
@@ -153,7 +156,6 @@ if st.button("Calcular total", type="primary", use_container_width=True):
     total_final = n_base + total_extras_neto + dietas_total + liq_neta
 
     st.markdown("### Resumen")
-    # Formateo limpio para días en el resumen
     dias_label = f"{jornadas:g}".replace('.', ',')
     st.write(f"📅 **Base ({dias_label} días) + Especiales/Plus:**")
     st.write(f"   • {n_base:.2f}€ netos (Bruto: {b_base:.2f}€)")
@@ -167,7 +169,10 @@ if st.button("Calcular total", type="primary", use_container_width=True):
     st.markdown(f"## Total: {total_final:.2f}€")
 
 for _ in range(3): st.write("")
-st.button("Nuevo cálculo", use_container_width=True, on_click=limpiar_todo)
+# El botón ahora llama a la función de limpieza y reinicia la app por completo
+if st.button("Nuevo cálculo", use_container_width=True):
+    limpiar_todo()
+    st.rerun()
 
 # --- SECCIÓN DE INFORMACIÓN, PRIVACIDAD Y CONTACTO ---
 st.write("") 
@@ -195,7 +200,7 @@ with st.container(border=True):
     **IMPORTANTE**
     Los resultados ofrecidos por esta calculadora son meramente informativos y orientativos. En ningún caso tienen carácter vinculante ni valor legal. Esta herramienta no sustituye el asesoramiento de un profesional o la información proporcionada por los departamentos de RRHH. La creadora de esta aplicación no se hace responsable de discrepancias entre los resultados de la app y las nóminas reales.  
     
-    <br>           
+    <br>            
     
     [**Envíanos tus comentarios, dudas, sugerencias...**](https://forms.gle/CWvr3USetYqbdam8A)
     
