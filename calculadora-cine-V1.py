@@ -43,7 +43,7 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-st.title("Calculadora de nómina")
+st.title("Calculadora de salario")
 
 # --- LÓGICA DE REINICIO (Único cambio real) ---
 if 'form_id' not in st.session_state:
