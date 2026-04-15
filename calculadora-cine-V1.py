@@ -200,7 +200,7 @@ with st.expander("Información, privacidad y contacto"):
     4. Si no te aparece en el inicio la encontrarás entre tus apps como "Streamlit"
 
     ### Normativa y Prácticas del Sector
-    Los cálculos se realizan tomando como referencia la normativa vigente (convenio colectivo, normativa de la Seguridad Social, tablas de IRPF y conceptos salariales estándar). No obstante, nos encontraremos algún apartado donde la lógica de la app se basa en las prácticas más habituales y extendidas de nuestra industria, lo cual puede hacer que no coincida exactamente tu nómina con el resultado mostrado.
+    Los cálculos se realizan tomando como referencia la normativa vigente (convenio colectivo, normativa de la Seguridad Social, tablas de IRPF, conceptos salariales estándar...). No obstante, nos encontraremos algún apartado donde la lógica de la app se basa en las prácticas más habituales y extendidas de nuestra industria, lo cual puede hacer que no coincida exactamente tu nómina con el resultado mostrado.
 
     ### Privacidad Total
     Esta aplicación **no almacena ningún dato introducido**. Ni salarios, ni horas, ni retenciones. Al cerrar la pestaña del navegador o pulsar el botón "Nuevo cálculo", todos los datos introducidos desaparecen para siempre.
