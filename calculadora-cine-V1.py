@@ -187,18 +187,14 @@ if st.button("Calcular total", type="primary", use_container_width=True):
     dias_label = f"{jornadas:g}".replace('.', ',')
     st.write(f"📅 **Base ({dias_label} días) + Especiales/Plus:**")
     st.write(f"   • {n_base:.2f}€ netos (Bruto: {b_base:.2f}€)")
-    <br>
     if total_extras_neto > 0:
         st.write(f"⚡️ **Extras/Festivas:**")
         st.write(f"   • {total_extras_neto:.2f}€ netos (Bruto: {total_extras_bruto:.2f}€)")
-        <br>
     if dietas_total > 0:
         st.write(f"✈️ **Dietas:** {dietas_total:.2f}€")
-        <br>
     if liq_neta > 0:
         st.write(f"📄 **Liquidación:**")
-        st.write(f"   • {liq_neta:.2f}€ netos")
-        
+        st.write(f"   • {liq_neta:.2f}€ netos"<br>)
     st.markdown(f"## Total: {total_final:.2f}€")
 
 for _ in range(3): st.write("")
