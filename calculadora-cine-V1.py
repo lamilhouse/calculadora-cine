@@ -142,45 +142,47 @@ especiales_qty = st.number_input("¿Cuántas?", min_value=1, step=1, format="%d"
 plus_consec = st.checkbox("¿Plus 4 jornadas consecutivas (+35€)?", key=f"check_plus_{fid}")
 plus_consec_qty = st.number_input("¿Cuántos?", min_value=1, step=1, format="%d", key=f"qty_plus_{fid}") if plus_consec else 0
 
-# --- NUEVA LÓGICA DE LIQUIDACIÓN ---
+# --- NUEVA SECCIÓN DE LIQUIDACIÓN ---
 st.write("---")
-calc_liq = st.radio("¿Quieres calcular tu liquidación (vacaciones y finiquito)?", ('No, van incluidas en el bruto', 'Sí, calcular'), key=f"calc_liq_{fid}")
+calc_liq = st.radio("¿Quieres calcular tu liquidación?", ('No, va incluida en el bruto', 'Sí, calcular aparte'), key=f"calc_liq_{fid}")
 
-if calc_liq == 'Sí, calcular':
+if calc_liq == 'Sí, calcular aparte':
     col_m, col_d = st.columns(2)
-    if 'Días sueltos' in tipo_contrato:
-        m_liq = col_m.number_input("Meses completos", min_value=0, value=0, step=1, key=f"m_liq_{fid}")
-        d_liq = col_d.number_input("Días totales", min_value=0.0, value=jornadas, step=1.0, key=f"d_liq_{fid}")
-    else:
+    if 'Mes' in tipo_contrato:
         m_liq = col_m.number_input("Meses completos", min_value=0, value=1, step=1, key=f"m_liq_{fid}")
         d_liq = col_d.number_input("Días de la última nómina", min_value=0.0, value=0.0, step=1.0, key=f"d_liq_{fid}")
+        base_liq = bruto_dia * ((m_liq * 30) + d_liq)
+    else:
+        # En días sueltos, la base es simplemente el bruto por las jornadas indicadas arriba
+        base_liq = bruto_dia * jornadas
     
-    liq_opcion = st.selectbox("Opciones de liquidación", 
-                             ['Calcular todo', 'Solo vacaciones', 'Solo finiquito'], 
+    liq_opcion = st.selectbox("¿Liquidación con finiquito y vacaciones?", 
+                             ['Sí, calcular todo', 'Calcular sólo finiquito', 'Calcular sólo vacaciones'], 
                              key=f"liq_val_{fid}")
-    base_liq = bruto_dia * ((m_liq * 30) + d_liq)
 else:
+    base_liq = 0
     liq_opcion = 'No, calcular'
-    base_liq = bruto_dia * jornadas
 
 # --- PROCESADO ---
 st.write("")
 if st.button("Calcular total", type="primary", use_container_width=True):
+    # La base de la nómina se calcula siempre sobre 'jornadas' (los 30 días o días sueltos del mes actual)
     b_base = (bruto_dia * jornadas) + (especiales_qty * 20) + (plus_consec_qty * 35)
     n_base = b_base * (1 - 0.0653 - (irpf/100))
+    
     total_extras_neto = sum(item['neto'] for item in st.session_state.extras_lista)
     total_extras_bruto = sum(item['bruto'] for item in st.session_state.extras_lista)
     dietas_total = (st.session_state.dietas["comida"] * 14.02 + st.session_state.dietas["cena"] * 16.36 + st.session_state.dietas["sin"] * 30.38 + st.session_state.dietas["con"] * 51.39)
     
-    # Lógica de liquidación refinada
+    # La liquidación usa la base_liq calculada en el apartado anterior
     v_bruto = 0
     f_bruto = 0
-    if calc_liq == 'Sí, calcular':
-        if liq_opcion in ['Calcular todo', 'Solo vacaciones']:
+    if calc_liq == 'Sí, calcular aparte':
+        if liq_opcion in ['Sí, calcular todo', 'Calcular sólo vacaciones']:
             v_bruto = base_liq * 0.07
-        if liq_opcion in ['Calcular todo', 'Solo finiquito']:
+        if liq_opcion in ['Sí, calcular todo', 'Calcular sólo finiquito']:
             f_bruto = base_liq * 0.0333
-    
+            
     liq_neta = (v_bruto + f_bruto) * (1 - (irpf/100))
     total_final = n_base + total_extras_neto + dietas_total + liq_neta
 
@@ -200,7 +202,7 @@ if st.button("Calcular total", type="primary", use_container_width=True):
 for _ in range(3): st.write("")
 st.button("Nuevo cálculo", use_container_width=True, on_click=limpiar_todo)
 
-# --- SECCIÓN FINAL ---
+# --- SECCIÓN DE INFORMACIÓN ---
 st.write("") 
 st.write("---") 
 
