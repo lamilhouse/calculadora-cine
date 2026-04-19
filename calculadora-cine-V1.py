@@ -144,19 +144,19 @@ plus_consec_qty = st.number_input("¿Cuántos?", min_value=1, step=1, format="%d
 
 # --- NUEVA SECCIÓN DE LIQUIDACIÓN ---
 st.write("---")
-calc_liq = st.radio("¿Quieres calcular tu liquidación?", ('No, va incluida en el bruto', 'Sí, calcular aparte'), key=f"calc_liq_{fid}")
+calc_liq = st.radio("¿Quieres calcular tu liquidación?", ('No', 'Sí, calcular'), key=f"calc_liq_{fid}")
 
-if calc_liq == 'Sí, calcular aparte':
+if calc_liq == 'Sí, calcular':
     col_m, col_d = st.columns(2)
     if 'Mes' in tipo_contrato:
         m_liq = col_m.number_input("Meses completos", min_value=0, value=1, step=1, key=f"m_liq_{fid}")
-        d_liq = col_d.number_input("Días de la última nómina", min_value=0.0, value=0.0, step=1.0, key=f"d_liq_{fid}")
+        d_liq = col_d.number_input("Días de la última nómina", min_value=0, value=0, step=1, key=f"d_liq_{fid}")
         base_liq = bruto_dia * ((m_liq * 30) + d_liq)
     else:
         # En días sueltos, la base es simplemente el bruto por las jornadas indicadas arriba
         base_liq = bruto_dia * jornadas
     
-    liq_opcion = st.selectbox("¿Liquidación con finiquito y vacaciones?", 
+    liq_opcion = st.selectbox("¿Finiquito y vacaciones?", 
                              ['Sí, calcular todo', 'Calcular sólo finiquito', 'Calcular sólo vacaciones'], 
                              key=f"liq_val_{fid}")
 else:
