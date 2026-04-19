@@ -194,7 +194,7 @@ if st.button("Calcular total", type="primary", use_container_width=True):
         st.write(f"✈️ **Dietas:** {dietas_total:.2f}€")
     if liq_neta > 0:
         st.write(f"📄 **Liquidación:**")
-        st.write(f"   • {liq_neta:.2f}€ netos"<br>)
+        st.write(f"   • {liq_neta:.2f}€ netos")
     st.markdown(f"## Total: {total_final:.2f}€")
 
 for _ in range(3): st.write("")
