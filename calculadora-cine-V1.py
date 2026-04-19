@@ -143,7 +143,7 @@ especiales_qty = st.number_input("¿Cuántas?", min_value=1, step=1, format="%d"
 plus_consec = st.checkbox("¿Plus 4 jornadas consecutivas (+35€)?", key=f"check_plus_{fid}")
 plus_consec_qty = st.number_input("¿Cuántos?", min_value=1, step=1, format="%d", key=f"qty_plus_{fid}") if plus_consec else 0
 
-liq_opcion = st.selectbox("¿Vacaciones y finiquito aparte?", ['No, calcular', 'Todo aparte', 'Vacaciones aparte', 'Finiquito aparte'], key=f"liq_val_{fid}")
+liq_opcion = st.selectbox("¿Vacaciones y finiquito incluidos en el bruto?", ['No, calcular', 'Todo incluido', 'Vacaciones aparte', 'Finiquito aparte'], key=f"liq_val_{fid}")
 
 # --- PROCESADO ---
 st.write("")
