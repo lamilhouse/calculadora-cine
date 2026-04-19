@@ -150,7 +150,7 @@ if calc_liq == 'Sí, calcular aparte':
     col_m, col_d = st.columns(2)
     if 'Mes' in tipo_contrato:
         m_liq = col_m.number_input("Meses completos", min_value=0, value=1, step=1, key=f"m_liq_{fid}")
-        d_liq = col_d.number_input("Días de la última nómina", min_value=0, value=0, step=1, key=f"d_liq_{fid}")
+        d_liq = col_d.number_input("Días de meses incompletos", min_value=0, value=0, step=1, key=f"d_liq_{fid}")
         base_liq = bruto_dia * ((m_liq * 30) + d_liq)
     else:
         base_liq = bruto_dia * jornadas
